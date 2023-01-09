@@ -1,6 +1,7 @@
 package com.quid.stock.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.quid.stock.domain.Stock;
 import com.quid.stock.repository.StockJpaRepository;
@@ -37,6 +38,11 @@ class StockServiceTest {
     void decreaseStock() {
         stockService.decreaseStock(1L, 1L);
         stockJpaRepository.findByProductId(1L).ifPresent(stock -> assertEquals(9L, stock.getQuantity()));
+    }
+
+    @Test
+    void decreaseStock_when_quantity_is_bigger() {
+        assertThrows(RuntimeException.class, () -> stockService.decreaseStock(1L, 100L));
     }
 
 }
