@@ -37,12 +37,10 @@ lock 을 걸지않고 문제가 발생할 때 처리합니다.
 
 ### 2. pessimistic lock (exclusive lock)
 
-
 다른 트랜잭션이 특정 row 의 lock 을 얻는것을 방지합니다.   
 A 트랜잭션이 끝날때까지 기다렸다가 B 트랜잭션이 lock 을 획득합니다.   
 특정 row 를 update 하거나 delete 할 수 있습니다.   
 일반 select 는 별다른 lock 이 없기때문에 조회는 가능합니다.
-
 
 ### 3. named lock
 
