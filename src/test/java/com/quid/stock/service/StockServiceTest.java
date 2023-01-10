@@ -70,6 +70,14 @@ class StockServiceTest {
             .ifPresent(stock -> assertEquals(0L, stock.getQuantity()));
     }
 
+    @Test
+    void RaceConditionWithOptimisticLock() throws InterruptedException {
+        runDecreaseThread(OPTIMISTIC);
+
+        stockJpaRepository.findByProductId(1L)
+            .ifPresent(stock -> assertEquals(0L, stock.getQuantity()));
+    }
+
     private void runDecreaseThread(LockType Op) throws InterruptedException {
         int threadCount = 10;
         ExecutorService executorService = newFixedThreadPool(threadCount);
@@ -81,14 +89,28 @@ class StockServiceTest {
                         case NONE -> stockService.decreaseStock(1L, 1L);
                         case PESSIMISTIC_WRITE ->
                             stockService.decreaseStockWithPessimisticLock(1L, 1L);
+                        case OPTIMISTIC -> decreseStockWithOptimisticLock();
                         default -> throw new RuntimeException("Invalid Op");
                     }
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
                 } finally {
                     latch.countDown();
                 }
             });
         }
         latch.await();
+    }
+
+    private void decreseStockWithOptimisticLock() throws InterruptedException {
+        while (true) {
+            try {
+                stockService.decreaseStockWithOptimisticLock(1L, 1L);
+                break;
+            } catch (Exception e) {
+                Thread.sleep(100);
+            }
+        }
     }
 
 }

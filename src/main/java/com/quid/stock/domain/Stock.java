@@ -5,6 +5,7 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.Version;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,6 +25,10 @@ public class Stock {
     private Long productId;
 
     private Long quantity;
+
+    //optimistic lock을 위한 version
+    @Version
+    private Long version;
 
     @Builder
     public Stock(Long productId, Long quantity) {
