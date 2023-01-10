@@ -25,7 +25,7 @@ public class StockServiceImpl implements StockService {
     @Override
     @Transactional
     public void decreaseStockWithPessimisticLock(Long productId, Long quantity) {
-        Stock stock = stockJpaRepository.findByProductId(productId)
+        Stock stock = stockJpaRepository.findByProductIdWithPessimisticLock(productId)
             .orElseThrow(() -> new RuntimeException("Product not found"));
         stock.decreaseStock(quantity);
         stockJpaRepository.saveAndFlush(stock);

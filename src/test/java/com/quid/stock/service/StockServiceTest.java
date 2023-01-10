@@ -1,6 +1,9 @@
 package com.quid.stock.service;
 
-import static com.quid.stock.type.LockType.*;
+import static com.quid.stock.type.LockType.NAMED_LOCK;
+import static com.quid.stock.type.LockType.NONE;
+import static com.quid.stock.type.LockType.OPTIMISTIC;
+import static com.quid.stock.type.LockType.PESSIMISTIC_WRITE;
 import static java.util.concurrent.Executors.newFixedThreadPool;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -22,10 +25,6 @@ class StockServiceTest {
 
     @Autowired
     private StockService stockService;
-
-    @Autowired
-    private NamedLockFacade namedLockFacade;
-
     @Autowired
     private StockJpaRepository stockJpaRepository;
 
@@ -100,8 +99,8 @@ class StockServiceTest {
                         case NONE -> stockService.decreaseStock(1L, 1L);
                         case PESSIMISTIC_WRITE ->
                             stockService.decreaseStockWithPessimisticLock(1L, 1L);
-                        case OPTIMISTIC -> decreseStockWithOptimisticLock();
-                        case NAMED_LOCK -> namedLockFacade.decrease(1L, 1L);
+                        case OPTIMISTIC -> decreseStockWithOptimisticLock(1L, 1L);
+                        case NAMED_LOCK -> decreaseStockWithNamedLock(1L, 1L);
                         default -> throw new RuntimeException("Invalid Op");
                     }
                 } catch (InterruptedException e) {
@@ -114,14 +113,23 @@ class StockServiceTest {
         latch.await();
     }
 
-    private void decreseStockWithOptimisticLock() throws InterruptedException {
+    private void decreseStockWithOptimisticLock(Long productId, Long quantity) throws InterruptedException {
         while (true) {
             try {
-                stockService.decreaseStockWithOptimisticLock(1L, 1L);
+                stockService.decreaseStockWithOptimisticLock(productId, quantity);
                 break;
             } catch (Exception e) {
                 Thread.sleep(100);
             }
+        }
+    }
+
+    public void decreaseStockWithNamedLock(Long productId, Long quantity) {
+        try {
+            stockJpaRepository.getLock(productId.toString());
+            stockService.decreaseStock(productId, quantity);
+        } finally {
+            stockJpaRepository.releaseLock(productId.toString());
         }
     }
 
