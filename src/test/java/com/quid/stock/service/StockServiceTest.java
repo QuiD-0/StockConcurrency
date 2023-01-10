@@ -58,7 +58,6 @@ class StockServiceTest {
     void RaceCondition() throws InterruptedException {
         runDecreaseThread(NONE);
 
-        //여러 쓰레드에서 값을 동시에 변경할 경우 원하는 값이 나오지 않을 수 있다.
         stockJpaRepository.findByProductId(1L)
             .ifPresent(stock -> assertNotEquals(0L, stock.getQuantity()));
     }
@@ -67,7 +66,6 @@ class StockServiceTest {
     void RaceConditionWithPessimisticLock() throws InterruptedException {
         runDecreaseThread(PESSIMISTIC_WRITE);
 
-        //Pessimistic Lock을 사용하면 원하는 값이 나온다.
         stockJpaRepository.findByProductId(1L)
             .ifPresent(stock -> assertEquals(0L, stock.getQuantity()));
     }
@@ -99,7 +97,7 @@ class StockServiceTest {
                         case NONE -> stockService.decreaseStock(1L, 1L);
                         case PESSIMISTIC_WRITE ->
                             stockService.decreaseStockWithPessimisticLock(1L, 1L);
-                        case OPTIMISTIC -> decreseStockWithOptimisticLock(1L, 1L);
+                        case OPTIMISTIC -> decreaseStockWithOptimisticLock(1L, 1L);
                         case NAMED_LOCK -> decreaseStockWithNamedLock(1L, 1L);
                         default -> throw new RuntimeException("Invalid Op");
                     }
@@ -113,7 +111,7 @@ class StockServiceTest {
         latch.await();
     }
 
-    private void decreseStockWithOptimisticLock(Long productId, Long quantity) throws InterruptedException {
+    private void decreaseStockWithOptimisticLock(Long productId, Long quantity) throws InterruptedException {
         while (true) {
             try {
                 stockService.decreaseStockWithOptimisticLock(productId, quantity);
