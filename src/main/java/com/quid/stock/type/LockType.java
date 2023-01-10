@@ -4,4 +4,5 @@ public enum LockType {
     NONE,
     PESSIMISTIC_WRITE,
     OPTIMISTIC,
+    NAMED_LOCK,
 }

@@ -24,6 +24,9 @@ class StockServiceTest {
     private StockService stockService;
 
     @Autowired
+    private NamedLockFacade namedLockFacade;
+
+    @Autowired
     private StockJpaRepository stockJpaRepository;
 
     @BeforeEach
@@ -78,6 +81,14 @@ class StockServiceTest {
             .ifPresent(stock -> assertEquals(0L, stock.getQuantity()));
     }
 
+    @Test
+    void RaceConditionWithNamedLock() throws InterruptedException {
+        runDecreaseThread(NAMED_LOCK);
+
+        stockJpaRepository.findByProductId(1L)
+            .ifPresent(stock -> assertEquals(0L, stock.getQuantity()));
+    }
+
     private void runDecreaseThread(LockType Op) throws InterruptedException {
         int threadCount = 10;
         ExecutorService executorService = newFixedThreadPool(threadCount);
@@ -90,6 +101,7 @@ class StockServiceTest {
                         case PESSIMISTIC_WRITE ->
                             stockService.decreaseStockWithPessimisticLock(1L, 1L);
                         case OPTIMISTIC -> decreseStockWithOptimisticLock();
+                        case NAMED_LOCK -> namedLockFacade.decrease(1L, 1L);
                         default -> throw new RuntimeException("Invalid Op");
                     }
                 } catch (InterruptedException e) {
