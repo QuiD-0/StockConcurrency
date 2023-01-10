@@ -32,7 +32,7 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
-    @Transactional(isolation = Isolation.READ_COMMITTED)
+    @Transactional
     public void decreaseStockWithOptimisticLock(Long productId, Long quantity) {
         Stock stock = stockJpaRepository.findByProductIdWithOptimisticLock(productId)
             .orElseThrow(() -> new RuntimeException("Product not found"));
