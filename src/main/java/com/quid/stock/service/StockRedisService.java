@@ -9,11 +9,11 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class StockRedisFacade {
+public class StockRedisService {
 
         private final StockRedisRepository stockRedisRepository;
         private final RedissonClient redisonClient;
-        private final StockService stockService;
+        private final StockMysqlService stockMysqlService;
 
         public void decreaseStockWithRedisLettuce(long productId, long quantity)
             throws InterruptedException {
@@ -21,7 +21,7 @@ public class StockRedisFacade {
                     Thread.sleep(100);
                 }
                 try {
-                    stockService.decreaseStock(productId, quantity);
+                    stockMysqlService.decreaseStock(productId, quantity);
                 } finally {
                     stockRedisRepository.unlock(productId);
                 }
@@ -33,7 +33,7 @@ public class StockRedisFacade {
                 if(!lock.tryLock(5,1, TimeUnit.SECONDS)) {
                     throw new RuntimeException("Lock is not available");
                 }
-                stockService.decreaseStock(productId, quantity);
+                stockMysqlService.decreaseStock(productId, quantity);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             } finally {

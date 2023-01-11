@@ -15,10 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class StockRedisFacadeTest {
+class StockRedisServiceTest {
 
     @Autowired
-    private StockRedisFacade stockRedisFacade;
+    private StockRedisService stockRedisService;
     @Autowired
     private StockJpaRepository stockJpaRepository;
 
@@ -61,9 +61,9 @@ class StockRedisFacadeTest {
                 try {
                     switch (op) {
                         case REDIS_LETTUCE ->
-                            stockRedisFacade.decreaseStockWithRedisLettuce(1L, 1L);
+                            stockRedisService.decreaseStockWithRedisLettuce(1L, 1L);
                         case REDIS_REDISSON ->
-                            stockRedisFacade.decreaseStockWithRedisRadisson(1L, 1L);
+                            stockRedisService.decreaseStockWithRedisRadisson(1L, 1L);
                     }
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
