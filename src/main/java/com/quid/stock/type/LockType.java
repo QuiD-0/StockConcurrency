@@ -5,4 +5,6 @@ public enum LockType {
     PESSIMISTIC_WRITE,
     OPTIMISTIC,
     NAMED_LOCK,
+    REDIS_LETTUCE,
+    REDIS_RADISSON,
 }

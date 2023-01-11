@@ -16,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 class StockRedisFacadeTest {
+
     @Autowired
     private StockRedisFacade stockRedisFacade;
     @Autowired
@@ -36,22 +37,34 @@ class StockRedisFacadeTest {
     }
 
     @Test
-    void raceConditionWithRedis() throws InterruptedException {
-        runDecreaseThread();
+    void raceConditionWithRedisLettuce() throws InterruptedException {
+        runDecreaseThread(LockType.REDIS_LETTUCE);
 
         stockJpaRepository.findByProductId(1L)
             .ifPresent(stock -> assertEquals(0L, stock.getQuantity()));
     }
 
+    @Test
+    void raceConditionWithRedisRadisson() throws InterruptedException {
+        runDecreaseThread(LockType.REDIS_RADISSON);
 
-    private void runDecreaseThread() throws InterruptedException {
+        stockJpaRepository.findByProductId(1L)
+            .ifPresent(stock -> assertEquals(0L, stock.getQuantity()));
+    }
+
+    private void runDecreaseThread(LockType op) throws InterruptedException {
         int threadCount = 10;
         ExecutorService executorService = newFixedThreadPool(threadCount);
         CountDownLatch latch = new CountDownLatch(threadCount);
         for (int i = 0; i < threadCount; i++) {
             executorService.submit(() -> {
                 try {
-                    stockRedisFacade.lockAndDecreaseStock(1L, 1L);
+                    switch (op) {
+                        case REDIS_LETTUCE ->
+                            stockRedisFacade.decreaseStockWithRedisLettuce(1L, 1L);
+                        case REDIS_RADISSON ->
+                            stockRedisFacade.decreaseStockWithRedisRadisson(1L, 1L);
+                    }
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 } finally {
