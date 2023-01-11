@@ -27,16 +27,14 @@ public class StockRedisService {
                 }
         }
 
-        public void decreaseStockWithRedisRadisson(Long productId, long quantity) {
+        public void decreaseStockWithRedisRadisson(Long productId, long quantity)
+            throws InterruptedException {
             RLock lock = redisonClient.getLock("productId::"+productId.toString());
             try {
-                if(!lock.tryLock(5,1, TimeUnit.SECONDS)) {
-                    throw new RuntimeException("Lock is not available");
+                if(lock.tryLock(5,1, TimeUnit.SECONDS)) {
+                    stockMysqlService.decreaseStock(productId, quantity);
                 }
-                stockMysqlService.decreaseStock(productId, quantity);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            } finally {
+            }finally {
                 lock.unlock();
             }
         }
