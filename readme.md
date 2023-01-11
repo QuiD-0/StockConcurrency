@@ -46,3 +46,18 @@ A 트랜잭션이 끝날때까지 기다렸다가 B 트랜잭션이 lock 을 획
 
 이름과 함께 lock 을획득합니다.   
 해당 lock 은 다른세션에서 획득 및 해제가 불가능합니다.
+
+## 4. redis lock
+
+redis 는 메모리 기반의 key-value 저장소입니다.
+redis 에서는 lock 을 획득하고 해제하는 기능을 제공합니다.
+
+### 1. lettuce
+
+spring data redis를 이용하면 lettuce가 기본이기 때문에 별도의 라이브러리를 추가할 필요가 없습니다.
+spin lock 을 이용하여 lock 을 획득하고 해제하는 방법입니다.
+
+### 2. redisson
+
+redisson 은 redis 를 이용하여 lock 을 획득하고 해제하는 기능을 제공합니다.
+pub-sub 을 이용하여 lock 을 획득하고 해제하는 방법입니다.
