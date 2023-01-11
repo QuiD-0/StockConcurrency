@@ -31,10 +31,8 @@ public class StockRedisFacade {
             RLock lock = redisonClient.getLock("productId::"+productId.toString());
             try {
                 if(!lock.tryLock(5,1, TimeUnit.SECONDS)) {
-                    System.out.println("Lock not acquired");
                     throw new RuntimeException("Lock is not available");
                 }
-                System.out.println("Lock acquired");
                 stockService.decreaseStock(productId, quantity);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
