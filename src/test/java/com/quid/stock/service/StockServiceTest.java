@@ -63,7 +63,7 @@ class StockServiceTest {
     }
 
     @Test
-    void RaceConditionWithPessimisticLock() throws InterruptedException {
+    void PessimisticLock() throws InterruptedException {
         runDecreaseThread(PESSIMISTIC_WRITE);
 
         stockJpaRepository.findByProductId(1L)
@@ -71,7 +71,7 @@ class StockServiceTest {
     }
 
     @Test
-    void RaceConditionWithOptimisticLock() throws InterruptedException {
+    void OptimisticLock() throws InterruptedException {
         runDecreaseThread(OPTIMISTIC);
 
         stockJpaRepository.findByProductId(1L)
@@ -79,7 +79,7 @@ class StockServiceTest {
     }
 
     @Test
-    void RaceConditionWithNamedLock() throws InterruptedException {
+    void NamedLock() throws InterruptedException {
         runDecreaseThread(NAMED_LOCK);
 
         stockJpaRepository.findByProductId(1L)

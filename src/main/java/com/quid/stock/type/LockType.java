@@ -6,5 +6,5 @@ public enum LockType {
     OPTIMISTIC,
     NAMED_LOCK,
     REDIS_LETTUCE,
-    REDIS_RADISSON,
+    REDIS_REDISSON,
 }

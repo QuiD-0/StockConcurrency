@@ -37,7 +37,7 @@ class StockRedisFacadeTest {
     }
 
     @Test
-    void raceConditionWithRedisLettuce() throws InterruptedException {
+    void RedisLettuce() throws InterruptedException {
         runDecreaseThread(LockType.REDIS_LETTUCE);
 
         stockJpaRepository.findByProductId(1L)
@@ -45,8 +45,8 @@ class StockRedisFacadeTest {
     }
 
     @Test
-    void raceConditionWithRedisRadisson() throws InterruptedException {
-        runDecreaseThread(LockType.REDIS_RADISSON);
+    void Redisson() throws InterruptedException {
+        runDecreaseThread(LockType.REDIS_REDISSON);
 
         stockJpaRepository.findByProductId(1L)
             .ifPresent(stock -> assertEquals(0L, stock.getQuantity()));
@@ -62,7 +62,7 @@ class StockRedisFacadeTest {
                     switch (op) {
                         case REDIS_LETTUCE ->
                             stockRedisFacade.decreaseStockWithRedisLettuce(1L, 1L);
-                        case REDIS_RADISSON ->
+                        case REDIS_REDISSON ->
                             stockRedisFacade.decreaseStockWithRedisRadisson(1L, 1L);
                     }
                 } catch (InterruptedException e) {
